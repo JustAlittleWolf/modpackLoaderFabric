@@ -139,7 +139,7 @@ public class ModpackLoaderFabric implements ModInitializer {
                     modList[i] = modsArray.get(i).getAsString();
                 }
 
-                String apiKey = "$2a$10$VgcCV7JqUCIFYx7i9SaSeubaqIzJgOuqlclmcYyIFgnDX2nSBYjEC";
+                String apiKey = ""; //put your Curseforge API-Token here https://docs.curseforge.com/#accessing-the-service
 
                 for (String mod : modList) {
                     downloadModCurseforge(mod, allowedVersionsDefault, apiKey);
