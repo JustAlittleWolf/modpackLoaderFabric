@@ -9,7 +9,9 @@
   ],
   "contact": {
     "email": "jakobi5000@gmail.com",
-    "homepage": "https://wolfii.me/"
+    "homepage": "https://wolfii.me/",
+    "isses": "https://github.com/JustAlittleWolf/modpackLoaderFabric/issues",
+    "sources": "https://github.com/JustAlittleWolf/modpackLoaderFabric"
   },
   "license": "MIT",
   "icon": "assets/modpackloaderfabric/icon.png",
@@ -27,7 +29,6 @@
   ],
   "depends": {
     "fabricloader": ">=0.13.0",
-    "fabric": "*",
     "java": ">=17"
   },
   "recommends": {
