@@ -1,3 +1,5 @@
+<img src="src/main/resources/assets/modpackloaderfabric/icon.png" width="128">
+
 # modpackLoaderFabric
 Using this mod makes it very easy to download a ton of mods from a list of modpacks and keep them up to date.
 
