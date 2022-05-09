@@ -1,6 +1,6 @@
 <img src="src/main/resources/assets/modpackloaderfabric/icon.png" width="128">
 
-# modpackLoaderFabric
+# ModpackLoaderFabric
 Using this mod makes it very easy to download a ton of mods from a list of modpacks and keep them up to date.
 
 ## Dependencies
@@ -15,7 +15,7 @@ After launching the game with a new modpack selected, a restart is required to l
 By default, the game checks for updates only once a day to reduce startup time.
 
 ### First startup
-Due to some technical limitations, this mod only sees the mods it has added itself. That means if you have an old version of another mod installed and update it with *modpackLoaderFabric* it will not delete the old mod. Sometimes this is not an issue, but just to be sure scan your mods folder for duplicate mods, and delete the old versions.
+Due to some technical limitations, this mod only sees the mods it has added itself. That means if you have an old version of another mod installed and update it with *ModpackLoaderFabric* it will not delete the old mod. Sometimes this is not an issue, but just to be sure scan your mods folder for duplicate mods, and delete the old versions.
 
 ### Modpack from repository
 The easiest method at the moment is to use my respository at [wolfii.me](https://wolfii.me/ModpackLoaderFabric/availableModpacks.php). You can access all the modpacks from the config screen in modmenu under `Hosted Modpacks`.
@@ -30,7 +30,7 @@ Lastly, it is also possible to add a modpack by URL. This is done in the `Extern
 ## Config
 There are 3 main options in the config menu:
 - `Check for updates on game start` - Disabling this option prevents the mod from making any further changes to your mods folder.
-- `Update interval` - This option allows you to customise how often *modpackLoaderFabric* will check for updates. Setting this to 0 (not recommended, launching takes a while) will check for mod updates on every game launch.
+- `Update interval` - This option allows you to customise how often *ModpackLoaderFabric* will check for updates. Setting this to 0 (not recommended, launching takes a while) will check for mod updates on every game launch.
 - `Force update on next start` - After selecting a new modpack it is recommended to also check this option as well, as the mod will probably skip update checking by default due to the **update interval**.
 
 ![image](https://user-images.githubusercontent.com/54244277/167492039-5aae8daf-7388-443f-9a97-87daddac21f1.png)
@@ -53,8 +53,8 @@ The modpacks have to be stored in a json format
 * Modrinth-`versions`: A Json array of the Minecraft versions that will be searched for.
 * CurseForge-`versions`: A string of which Minecraft version will be searched for [(`73250` = 1.18-1.18.2)](curseForgeVersions.json).
 
-#### Mod-ID on modrinth
+#### Mod-ID on Modrinth
 ![image](https://user-images.githubusercontent.com/54244277/167493765-02f2135c-e071-42bd-bfb6-de73a3337ecd.png)
 
-#### Mod-ID on curseforge
+#### Mod-ID on CurseForge
 ![image](https://user-images.githubusercontent.com/54244277/167493845-2bfd601f-3e28-4ee5-85a0-0ca827c97108.png)
