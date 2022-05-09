@@ -10,7 +10,7 @@
   "contact": {
     "email": "jakobi5000@gmail.com",
     "homepage": "https://wolfii.me/",
-    "isses": "https://github.com/JustAlittleWolf/modpackLoaderFabric/issues",
+    "issues": "https://github.com/JustAlittleWolf/modpackLoaderFabric/issues",
     "sources": "https://github.com/JustAlittleWolf/modpackLoaderFabric"
   },
   "license": "MIT",
