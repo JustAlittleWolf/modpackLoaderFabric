@@ -51,7 +51,7 @@ The modpacks have to be stored in a json format
 ```
 * `mods`: A Json array of modids from the selected platform.
 * Modrinth-`versions`: A Json array of the Minecraft versions that will be searched for.
-* CurseForge-`versions`: A string of which Minecraft version will be searched for (`73250` = 1.18-1.18.2).
+* CurseForge-`versions`: A string of which Minecraft version will be searched for [(`73250` = 1.18-1.18.2)](curseForgeVersions.json).
 
 #### Mod-ID on modrinth
 ![image](https://user-images.githubusercontent.com/54244277/167493765-02f2135c-e071-42bd-bfb6-de73a3337ecd.png)
