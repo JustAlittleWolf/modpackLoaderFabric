@@ -25,7 +25,7 @@ If you want to create your own modpack, you can simply do so by creating a file 
 ### Modpack from external URL
 Lastly, it is also possible to add a modpack by URL. This is done in the `External Modpacks` panel in the config screen. Modpacks added this way also have to match [the modpack format](#modpack-format).
 
-### Config
+## Config
 There are 3 main options in the config menu:
 - `Check for updates on game start` - Disabling this option prevents the mod from making any further changes to your mods folder.
 - `Update interval` - This option allows you to customise how often *modpackLoaderFabric* will check for updates. Setting this to 0 (not recommended, launching takes a while) will check for mod updates on every game launch.
