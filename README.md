@@ -18,7 +18,7 @@ By default, the game checks for updates only once a day to reduce startup time.
 Due to some technical limitations, this mod only sees the mods it has added itself. That means if you have an old version of another mod installed and update it with *modpackLoaderFabric* it will not delete the old mod. Sometimes this is not an issue, but just to be sure scan your mods folder for duplicate mods, and delete the old versions.
 
 ### Modpack from repository
-The easiest method at the moment is to use my respository at [wolfii.me](wolfii.me/ModpackLoaderFabric/availableModpacks.php). You can access all the modpacks from the config screen in modmenu under `Hosted Modpacks`.
+The easiest method at the moment is to use my respository at [wolfii.me](https://wolfii.me/ModpackLoaderFabric/availableModpacks.php). You can access all the modpacks from the config screen in modmenu under `Hosted Modpacks`.
 Uploading modpacks to this website to make them publicly available will be possible soon.
 
 ### Modpack from local file
