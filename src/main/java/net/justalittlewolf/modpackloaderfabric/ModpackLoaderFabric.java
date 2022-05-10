@@ -13,19 +13,27 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Instant;
 import java.util.Objects;
+import java.util.jar.JarFile;
+import java.util.stream.Collectors;
 
 public class ModpackLoaderFabric implements ModInitializer {
 
     public static final Logger LOGGER = LoggerFactory.getLogger("modpackloaderfabric");
+    public static final String modSuffix = "_MPLF";
     //public static final String MOD_ID = "modpackloaderfabric";
 
     @Override
     public void onInitialize() {
+        updateMods(false);
+    }
 
+    public static void updateMods(boolean force) {
         boolean modPacksLoaded = false;
 
         Gson gson = new Gson();
@@ -37,7 +45,9 @@ public class ModpackLoaderFabric implements ModInitializer {
             File localModPacks = new File(FabricLoader.getInstance().getConfigDir().toString() + "/MPLF_Modpacks");
             localModPacks.mkdirs();
 
+            boolean skipLastUpdate = false;
             if (!file.exists()) {
+                skipLastUpdate = true;
                 file.createNewFile();
                 FileWriter fileW = new FileWriter(configPath);
                 fileW.write(json.toString());
@@ -45,6 +55,7 @@ public class ModpackLoaderFabric implements ModInitializer {
             } else {
                 json = gson.fromJson(Files.readString(Paths.get(configPath)), JsonObject.class);
                 if (!json.has("lastUpdate")) {
+                    skipLastUpdate = true;
                     json = gson.fromJson("{\"local\":[],\"host\":[\"default\"],\"url\":[],\"lastUpdate\":0,\"updateInterval\":1,\"updateOnStart\":true}", JsonObject.class);
                     FileWriter fileW = new FileWriter(configPath);
                     fileW.write(json.toString());
@@ -53,47 +64,51 @@ public class ModpackLoaderFabric implements ModInitializer {
             }
 
             File modPackExample = new File(localModPacks + "/ModpackExample.json");
-            if(!modPackExample.exists()) {
-                writeFile(new URL("https://wolfii.me/ModpackLoaderFabric/packs/default.json"), String.valueOf(modPackExample));
+            if (!modPackExample.exists()) {
+                ReadableByteChannel readableByteChannel = Channels.newChannel(new URL("https://wolfii.me/ModpackLoaderFabric/ModPackExample.json").openStream());
+                FileOutputStream fileOutputStream = new FileOutputStream(String.valueOf(modPackExample));
+                fileOutputStream.getChannel().transferFrom(readableByteChannel, 0, Long.MAX_VALUE);
             }
 
             if (json.has("updateOnStart")) {
-                if(json.get("updateOnStart").getAsBoolean()) {
-                long unixTime = Instant.now().getEpochSecond();
-                if ((unixTime - json.get("lastUpdate").getAsInt())/86400 > json.get("updateInterval").getAsInt()) {
-                    json.addProperty("lastUpdate", unixTime);
-                    FileWriter fileW = new FileWriter(configPath);
-                    fileW.write(json.toString());
-                    fileW.close();
-                    JsonObject modPack;
-                    if (json.get("host").getAsJsonArray().size() > 0) {
-                        for (int i = 0; i < json.get("host").getAsJsonArray().size(); i++) {
-                            URL modPackURL = new URL("https://wolfii.me/ModpackLoaderFabric/packs/" + json.get("host").getAsJsonArray().get(i).getAsString() + ".json");
-                            modPack = gson.fromJson(URLReader(modPackURL), JsonObject.class);
-                            LOGGER.info("[ModpackLoaderFabric] Loading Modpack from " + modPackURL);
-                            modPacksLoaded = loadModPack(modPack) || modPacksLoaded;
+                if (json.get("updateOnStart").getAsBoolean()) {
+                    long unixTime = Instant.now().getEpochSecond();
+                    if ((unixTime - json.get("lastUpdate").getAsInt()) / 86400.0 >= json.get("updateInterval").getAsFloat() || json.get("updateInterval").getAsInt() == 0 || force) {
+                        if (!skipLastUpdate) {
+                            json.addProperty("lastUpdate", unixTime);
+                            FileWriter fileW = new FileWriter(configPath);
+                            fileW.write(json.toString());
+                            fileW.close();
                         }
-                    }
-                    if (json.get("url").getAsJsonArray().size() > 0) {
-                        for (int i = 0; i < json.get("url").getAsJsonArray().size(); i++) {
-                            URL modPackURL = new URL(json.get("url").getAsJsonArray().get(i).getAsString());
-                            modPack = gson.fromJson(URLReader(modPackURL), JsonObject.class);
-                            LOGGER.info("[ModpackLoaderFabric] Loading Modpack from " + modPackURL);
-                            modPacksLoaded = loadModPack(modPack) || modPacksLoaded;
+                        JsonObject modPack;
+                        if (json.get("host").getAsJsonArray().size() > 0) {
+                            for (int i = 0; i < json.get("host").getAsJsonArray().size(); i++) {
+                                URL modPackURL = new URL("https://wolfii.me/ModpackLoaderFabric/packs/" + json.get("host").getAsJsonArray().get(i).getAsString() + ".json");
+                                modPack = gson.fromJson(URLReader(modPackURL), JsonObject.class);
+                                LOGGER.info("[ModpackLoaderFabric] Loading Modpack from " + modPackURL);
+                                modPacksLoaded = loadModPack(modPack) || modPacksLoaded;
+                            }
                         }
-                    }
-                    if (json.get("local").getAsJsonArray().size() > 0) {
-                        for (int i = 0; i < json.get("local").getAsJsonArray().size(); i++) {
-                            modPack = gson.fromJson(Files.readString(Paths.get(localModPacks + "/" + json.get("local").getAsJsonArray().get(i).getAsString() + ".json")), JsonObject.class);
-                            LOGGER.info("[ModpackLoaderFabric] Loading Modpack from " + localModPacks + "\\" + json.get("local").getAsJsonArray().get(i).getAsString() + ".json");
-                            modPacksLoaded = loadModPack(modPack) || modPacksLoaded;
+                        if (json.get("url").getAsJsonArray().size() > 0) {
+                            for (int i = 0; i < json.get("url").getAsJsonArray().size(); i++) {
+                                URL modPackURL = new URL(json.get("url").getAsJsonArray().get(i).getAsString());
+                                modPack = gson.fromJson(URLReader(modPackURL), JsonObject.class);
+                                LOGGER.info("[ModpackLoaderFabric] Loading Modpack from " + modPackURL);
+                                modPacksLoaded = loadModPack(modPack) || modPacksLoaded;
+                            }
                         }
+                        if (json.get("local").getAsJsonArray().size() > 0) {
+                            for (int i = 0; i < json.get("local").getAsJsonArray().size(); i++) {
+                                modPack = gson.fromJson(Files.readString(Paths.get(localModPacks + "/" + json.get("local").getAsJsonArray().get(i).getAsString() + ".json")), JsonObject.class);
+                                LOGGER.info("[ModpackLoaderFabric] Loading Modpack from " + localModPacks + "\\" + json.get("local").getAsJsonArray().get(i).getAsString() + ".json");
+                                modPacksLoaded = loadModPack(modPack) || modPacksLoaded;
+                            }
+                        }
+                    } else {
+                        LOGGER.info("[ModpackLoaderFabric] Upading mods skipped (last update less than " + json.get("updateInterval").getAsInt() + " day(s) ago)");
                     }
-                } else {
-                    LOGGER.info("[ModpackLoaderFabric] Upading mods skipped (last update less than " + json.get("updateInterval").getAsInt() + " day(s) ago)");
                 }
             }
-        }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -139,7 +154,7 @@ public class ModpackLoaderFabric implements ModInitializer {
                     modList[i] = modsArray.get(i).getAsString();
                 }
 
-                String apiKey = ""; //put your Curseforge API-Token here https://docs.curseforge.com/#accessing-the-service
+                String apiKey = ""; //Add your Curseforge API-Token here https://docs.curseforge.com/#accessing-the-service
 
                 for (String mod : modList) {
                     downloadModCurseforge(mod, allowedVersionsDefault, apiKey);
@@ -163,6 +178,7 @@ public class ModpackLoaderFabric implements ModInitializer {
             URL downloadURL = new URL(modVersions.get(0).getAsJsonObject().get("files").getAsJsonArray().get(0).getAsJsonObject().get("url").getAsString());
 
             String modDir = FabricLoader.getInstance().getGameDir().toString() + "\\mods";
+            new File(modDir).mkdirs();
             String loadedModslistPath = FabricLoader.getInstance().getConfigDir().toString() + "/ModpackLoaderLoadedModlist.json";
             File file = new File(loadedModslistPath);
             JsonObject json = gson.fromJson("{}", JsonObject.class);
@@ -176,6 +192,8 @@ public class ModpackLoaderFabric implements ModInitializer {
                 }
             }
             String newFileName = modVersions.get(0).getAsJsonObject().get("files").getAsJsonArray().get(0).getAsJsonObject().get("filename").getAsString();
+            int lastDotIndex = newFileName.lastIndexOf('.');
+            newFileName = newFileName.substring(0, lastDotIndex) + modSuffix + newFileName.substring(lastDotIndex);
             String newVer = modVersions.get(0).getAsJsonObject().get("version_number").getAsString();
             boolean written = false;
             if (json.has(id)) {
@@ -240,6 +258,7 @@ public class ModpackLoaderFabric implements ModInitializer {
                 URL downloadURL = new URL(modVersions.get("data").getAsJsonArray().get(0).getAsJsonObject().get("downloadUrl").getAsString());
 
                 String modDir = FabricLoader.getInstance().getGameDir().toString() + "\\mods";
+                new File(modDir).mkdirs();
                 String loadedModslistPath = FabricLoader.getInstance().getConfigDir().toString() + "/ModpackLoaderLoadedModlist.json";
                 File file = new File(loadedModslistPath);
                 JsonObject json = gson.fromJson("{}", JsonObject.class);
@@ -252,7 +271,10 @@ public class ModpackLoaderFabric implements ModInitializer {
                         json = gson.fromJson("{}", JsonObject.class);
                     }
                 }
+
                 String newFileName = modVersions.get("data").getAsJsonArray().get(0).getAsJsonObject().get("fileName").getAsString();
+                int lastDotIndex = newFileName.lastIndexOf('.');
+                newFileName = newFileName.substring(0, lastDotIndex) + modSuffix + newFileName.substring(lastDotIndex);
                 String newVer = modVersions.get("data").getAsJsonArray().get(0).getAsJsonObject().get("id").getAsString();
                 boolean written = false;
                 if (json.has(id)) {
@@ -292,9 +314,34 @@ public class ModpackLoaderFabric implements ModInitializer {
     }
 
     public static void writeFile(URL downloadURL, String fileName) throws IOException {
+        Gson gson = new Gson();
+
         ReadableByteChannel readableByteChannel = Channels.newChannel(downloadURL.openStream());
         FileOutputStream fileOutputStream = new FileOutputStream(fileName);
         fileOutputStream.getChannel().transferFrom(readableByteChannel, 0, Long.MAX_VALUE);
+        JarFile downloaded = new JarFile(fileName);
+        InputStream modJsonInputStream = downloaded.getInputStream(downloaded.getJarEntry("fabric.mod.json"));
+        JsonObject fabricModJson = gson.fromJson(new BufferedReader(new InputStreamReader(modJsonInputStream, StandardCharsets.UTF_8)).lines().collect(Collectors.joining("\n")), JsonObject.class);
+        String modID = fabricModJson.get("id").getAsString();
+        File modFolder = new File(FabricLoader.getInstance().getGameDir().toString() + "\\mods");
+        for (final File fileEntry : Objects.requireNonNull(modFolder.listFiles())) {
+            if (fileEntry.isFile() && fileEntry.getName().endsWith(".jar")) {
+                int lastDotIndex = fileEntry.getName().lastIndexOf('.');
+                if (!fileEntry.getName().startsWith(modSuffix, lastDotIndex - modSuffix.length())) {
+                    JarFile local = new JarFile(fileEntry.getAbsoluteFile());
+                    InputStream localJsonInputStream = local.getInputStream(local.getJarEntry("fabric.mod.json"));
+                    JsonObject fabricModJsonLocal = gson.fromJson(new BufferedReader(new InputStreamReader(localJsonInputStream, StandardCharsets.UTF_8)).lines().collect(Collectors.joining("\n")), JsonObject.class);
+                    String modIDLocal = fabricModJsonLocal.get("id").getAsString();
+                    localJsonInputStream.close();
+                    local.close();
+                    if (modIDLocal.equals(modID) && !fileName.equals(fileEntry.getAbsoluteFile().toString())) {
+                        String oldFileName = fileEntry.getAbsoluteFile().toString();
+                        Files.move(Path.of(oldFileName), Path.of(fileEntry.getAbsoluteFile() + ".old"));
+                        LOGGER.info("[ModpackLoaderFabric] Disabled duplicate mod " + fileEntry.getName());
+                    }
+                }
+            }
+        }
     }
 
     public static String URLReader(URL url) throws IOException {
