@@ -1,0 +1,11 @@
+{
+	"modrinth": {
+		"versions": ["1.18.2", "1.18.1", "1.18"],
+		"mods": ["P7dR8mSH", "mOgUt4GM", "xkz0IIcB"]
+	},
+	"curseforge": {
+		"versions": "73250",
+		"mods": ["348521"]
+	},
+	"description": "Example Modpack"
+}
