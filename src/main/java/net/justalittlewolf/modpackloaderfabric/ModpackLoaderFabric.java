@@ -5,6 +5,9 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
+
+import java.io.File;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,9 +18,10 @@ import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.jar.JarFile;
 import java.util.stream.Collectors;
@@ -26,10 +30,18 @@ public class ModpackLoaderFabric implements ModInitializer {
 
     public static final Logger LOGGER = LoggerFactory.getLogger("modpackloaderfabric");
     public static final String modSuffix = "_MPLF";
+    public static final List<File> finalDelete = new ArrayList<File>();
     //public static final String MOD_ID = "modpackloaderfabric";
 
     @Override
     public void onInitialize() {
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            LOGGER.info(finalDelete.toString());
+            for (int i = 0; i < finalDelete.size(); i++) {
+                finalDelete.get(i).deleteOnExit();
+            }
+        }));
+
         updateMods(false);
     }
 
@@ -154,7 +166,7 @@ public class ModpackLoaderFabric implements ModInitializer {
                     modList[i] = modsArray.get(i).getAsString();
                 }
 
-                String apiKey = ""; //Add your Curseforge API-Token here https://docs.curseforge.com/#accessing-the-service
+                String apiKey = "$2a$10$VgcCV7JqUCIFYx7i9SaSeubaqIzJgOuqlclmcYyIFgnDX2nSBYjEC"; //Add your Curseforge API-Token here https://docs.curseforge.com/#accessing-the-service
 
                 for (String mod : modList) {
                     downloadModCurseforge(mod, allowedVersionsDefault, apiKey);
@@ -323,6 +335,8 @@ public class ModpackLoaderFabric implements ModInitializer {
         InputStream modJsonInputStream = downloaded.getInputStream(downloaded.getJarEntry("fabric.mod.json"));
         JsonObject fabricModJson = gson.fromJson(new BufferedReader(new InputStreamReader(modJsonInputStream, StandardCharsets.UTF_8)).lines().collect(Collectors.joining("\n")), JsonObject.class);
         String modID = fabricModJson.get("id").getAsString();
+        downloaded.close();
+        modJsonInputStream.close();
         File modFolder = new File(FabricLoader.getInstance().getGameDir().toString() + "\\mods");
         for (final File fileEntry : Objects.requireNonNull(modFolder.listFiles())) {
             if (fileEntry.isFile() && fileEntry.getName().endsWith(".jar")) {
@@ -335,8 +349,7 @@ public class ModpackLoaderFabric implements ModInitializer {
                     localJsonInputStream.close();
                     local.close();
                     if (modIDLocal.equals(modID) && !fileName.equals(fileEntry.getAbsoluteFile().toString())) {
-                        String oldFileName = fileEntry.getAbsoluteFile().toString();
-                        Files.move(Path.of(oldFileName), Path.of(fileEntry.getAbsoluteFile() + ".old"));
+                        finalDelete.add(new File(fileEntry.getAbsoluteFile().toString()));
                         LOGGER.info("[ModpackLoaderFabric] Disabled duplicate mod " + fileEntry.getName());
                     }
                 }
