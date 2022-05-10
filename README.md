@@ -16,7 +16,8 @@ By default, the mod checks for updates only once a day to reduce startup time.
 
 You can still add other mods manually, *ModpackLoaderFabric* will only automatically update your selected mods. **All mods downloaded by _ModpackLoaderFabric_ come with the suffix `modname_MPLF.jar`**
 
-**The mod sometimes doesn't delete old versions of a mod, please regularly check your mods folder.**
+**⚠The mod sometimes doesn't delete old versions of a mod, please regularly check your mods folder.**
+
 **⚠Unfortunately you have to manually restart the game to apply the newly downloaded mods, as reloading mods is impossible from within the game**
 
 ### Modpack from repository
