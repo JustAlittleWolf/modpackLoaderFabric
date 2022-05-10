@@ -21,7 +21,7 @@ You can still add other mods manually, *ModpackLoaderFabric* will only automatic
 **⚠Unfortunately you have to manually restart the game to apply the newly downloaded mods, as reloading mods is impossible from within the game**
 
 ### Modpack from repository
-The easiest method at the moment is to use my repository at [wolfii.me](https://wolfii.me/ModpackLoaderFabric/availableModpacks.php). You can access all the modpacks from the config screen in modmenu under `Hosted Modpacks`.
+The easiest method at the moment is to use my repository at [wolfii.me](https://wolfii.me/ModpackLoaderFabric). You can access all the modpacks from the config screen in modmenu under `Hosted Modpacks`.
 Uploading modpacks to this website to make them publicly available will be possible soon.
 
 ### Modpack from local file
