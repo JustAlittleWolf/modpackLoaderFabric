@@ -11,7 +11,7 @@ None of these are required, they just add a user-interface for selecting mods.
 - [Cloth Config API](https://www.curseforge.com/minecraft/mc-mods/cloth-config)
 
 ## Usage
-This mod uses the JSON format to store which mods to download and keep up to date. On startup, it searches [Modrinth](https://modrinth.com/mods) and [CurseForge](https://www.curseforge.com/minecraft/mc-mods) to see if a new version of the mods are available. If that is the case, *ModpackLoderFabric* will download the new version and delete the old version of the mod. If you had a mod installed before using *ModpackLoderFabric*, it will rename that mod to  `modname.jar.old`
+This mod uses the JSON format to store which mods to download and keep up to date. On startup, it searches [Modrinth](https://modrinth.com/mods) and [CurseForge](https://www.curseforge.com/minecraft/mc-mods) to see if a new version of the mods are available. If that is the case, *ModpackLoderFabric* will download the new version and delete the old version of the mod. If you had a mod installed before using *ModpackLoderFabric*, it will rename that mod to  `modname.jar.old`.
 By default, the mod checks for updates only once a day to reduce startup time.
 
 You can still add other mods manually, *ModpackLoaderFabric* will only automatically update your selected mods. **All mods downloaded by _ModpackLoaderFabric_ come with the suffix `modname_MPLF.jar`**
