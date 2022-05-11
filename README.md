@@ -34,7 +34,7 @@ Lastly, it is also possible to add a modpack by URL. This is done in the `Extern
 - `Force update on next start` - After selecting a new modpack it is recommended to also check this option as well, as the mod will probably skip update checking by default due to the **update interval**.
 - `Update on "Save & Quit"` - This will immediately install or update your selected modpacks, this will take a while. Restart your game to apply the new mods.
 
-![image](https://user-images.githubusercontent.com/54244277/167492039-5aae8daf-7388-443f-9a97-87daddac21f1.png)
+![image](https://i.imgur.com/okHkbvi.png)
 
 ## Modpack format
 The modpacks have to be stored in a JSON format
