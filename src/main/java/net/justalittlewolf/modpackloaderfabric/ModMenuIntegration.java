@@ -118,7 +118,7 @@ public class ModMenuIntegration implements ModMenuApi {
             ConfigCategory host = builder.getOrCreateCategory(Text.of("Hosted Modpacks"));
             JsonArray hostPacks = null;
             try {
-                URL hostURL = new URL("https://wolfii.me/ModpackLoaderFabric/availableModpacks.php");
+                URL hostURL = new URL("https://modpack.wolfii.me/availableModpacks.php");
                 hostPacks = gson.fromJson(URLReader(hostURL), JsonArray.class);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -128,7 +128,7 @@ public class ModMenuIntegration implements ModMenuApi {
                 String packName = FilenameUtils.removeExtension(hostModpack.getAsString());
                 String description = null;
                 try {
-                    JsonObject modPack = gson.fromJson(URLReader(new URL("https://wolfii.me/ModpackLoaderFabric/packs/" + packName + ".json")), JsonObject.class);
+                    JsonObject modPack = gson.fromJson(URLReader(new URL("https://modpack.wolfii.me/packs/" + packName + ".json")), JsonObject.class);
                     if (modPack.has("description")) {
                         description = modPack.get("description").getAsString();
                     }
@@ -148,7 +148,7 @@ public class ModMenuIntegration implements ModMenuApi {
                             .build());
                 }
             }
-            host.addEntry(entryBuilder.startTextDescription(Text.of("Create your own on https://wolfii.me/ModpackLoaderFabric")).build());
+            host.addEntry(entryBuilder.startTextDescription(Text.of("Create your own on https://modpacks.wolfii.me")).build());
 
             ConfigCategory url = builder.getOrCreateCategory(Text.of("External Modpacks"));
             JsonArray urlPacks = json.get("url").getAsJsonArray();
@@ -244,7 +244,11 @@ public class ModMenuIntegration implements ModMenuApi {
                 }
 
                 if(updateOnStart[2]) {
-                    updateMods(true);
+                    try {
+                        updateMods(true);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
             });
 
