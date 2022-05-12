@@ -19,8 +19,7 @@ You can still add other mods manually, *ModpackLoaderFabric* will only automatic
 **⚠Unfortunately you have to manually restart the game to apply the newly downloaded mods, as reloading mods is impossible from within the game**
 
 ### Modpack from repository
-The easiest method at the moment is to use my repository at [wolfii.me](https://modpacks.wolfii.me). You can access all the modpacks from the config screen in modmenu under `Hosted Modpacks`.
-Uploading modpacks to this website to make them publicly available will be possible soon.
+The easiest method at the moment is to use my repository at [modpack.wolfii.me](https://modpack.wolfii.me/create.php). You can access all the modpacks from the config screen in modmenu under `Hosted Modpacks`.
 
 ### Modpack from local file
 If you want to create your own modpack, you can simply do so by creating a file in your /config/MPLF_Modpacks and selecting it from the config screen under `Local Modpacks`. This file format has to match [the modpack format](#modpack-format).
@@ -38,6 +37,9 @@ Lastly, it is also possible to add a modpack by URL. This is done in the `Extern
 
 ## Modpack format
 The modpacks have to be stored in a JSON format
+
+You can use a template over at [modpack.wolfii.me](https://modpack.wolfii.me/create.php) to help making your own Modpack.
+
 ```json
 {
     "modrinth": {
