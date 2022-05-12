@@ -92,7 +92,7 @@ public class ModMenuIntegration implements ModMenuApi {
                     String packName = FilenameUtils.removeExtension(localModpack.getName());
                     String description = null;
                     try {
-                        JsonObject modPack = gson.fromJson(Files.readString(Paths.get(localModPackFolder + "\\" + packName + ".json")), JsonObject.class);
+                        JsonObject modPack = gson.fromJson(Files.readString(Paths.get(localModPackFolder + "/" + packName + ".json")), JsonObject.class);
                         if (modPack.has("description")) {
                             description = modPack.get("description").getAsString();
                         }
