@@ -151,7 +151,7 @@ public class ModpackLoaderFabric implements ModInitializer  {
                         JsonObject modPack;
                         if (json.get("host").getAsJsonArray().size() > 0) {
                             for (int i = 0; i < json.get("host").getAsJsonArray().size(); i++) {
-                                URL modPackURL = new URL("https://modpack.wolfii.me/packs/" + json.get("host").getAsJsonArray().get(i).getAsString() + ".json");
+                                URL modPackURL = new URL("https://modpack.wolfii.me/packs/" + json.get("host").getAsJsonArray().get(i).getAsString().replace(" ", "%20") + ".json");
                                 modPack = gson.fromJson(URLReader(modPackURL), JsonObject.class);
                                 LOGGER.info("[ModpackLoaderFabric] Loading Modpack from " + modPackURL);
                                 modPacksLoaded = loadModPack(modPack) || modPacksLoaded;
