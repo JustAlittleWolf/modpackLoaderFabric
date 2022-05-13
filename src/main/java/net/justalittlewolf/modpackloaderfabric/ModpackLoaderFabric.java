@@ -27,7 +27,7 @@ import java.util.Objects;
 import java.util.jar.JarFile;
 import java.util.stream.Collectors;
 
-public class ModpackLoaderFabric implements ModInitializer {
+public class ModpackLoaderFabric implements ModInitializer  {
 
     public static final Logger LOGGER = LoggerFactory.getLogger("modpackloaderfabric");
     public static final String modSuffix = "_MPLF";
@@ -44,7 +44,7 @@ public class ModpackLoaderFabric implements ModInitializer {
                 fileW.close();
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.info("Error caused by ModpackLoaderFabric: " + e);
         }
 
         try {
@@ -71,12 +71,12 @@ public class ModpackLoaderFabric implements ModInitializer {
             fileW.write(couldntDelete.toString());
             fileW.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.info("Error caused by ModpackLoaderFabric: " + e);
         }
         try {
             updateMods(false);
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.info("Error caused by ModpackLoaderFabric: " + e);
         }
 
     }
@@ -98,7 +98,7 @@ public class ModpackLoaderFabric implements ModInitializer {
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.info("Error caused by ModpackLoaderFabric: " + e);
         }
 
         boolean modPacksLoaded = false;
@@ -178,7 +178,7 @@ public class ModpackLoaderFabric implements ModInitializer {
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.info("Error caused by ModpackLoaderFabric: " + e);
         }
         if (modPacksLoaded) {
             LOGGER.info("[ModpackLoaderFabric] All mods up to date");
@@ -312,7 +312,7 @@ public class ModpackLoaderFabric implements ModInitializer {
                 jsonResponse = new Gson().fromJson(response.toString(), JsonArray.class);
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.info("Error caused by ModpackLoaderFabric: " + e);
         }
         return jsonResponse;
     }

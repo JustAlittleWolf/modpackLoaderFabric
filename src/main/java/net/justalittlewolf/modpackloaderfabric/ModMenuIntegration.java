@@ -9,6 +9,8 @@ import me.shedaniel.clothconfig2.api.ConfigEntryBuilder;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.text.Text;
 import org.apache.commons.io.FilenameUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -24,6 +26,7 @@ import static net.justalittlewolf.modpackloaderfabric.ModpackLoaderFabric.URLRea
 import static net.justalittlewolf.modpackloaderfabric.ModpackLoaderFabric.updateMods;
 
 public class ModMenuIntegration implements ModMenuApi {
+    public static final Logger LOGGER = LoggerFactory.getLogger("modpackloaderfabric");
     @Override
     public ConfigScreenFactory<?> getModConfigScreenFactory() {
         return parent -> {
@@ -49,7 +52,7 @@ public class ModMenuIntegration implements ModMenuApi {
                     }
                 }
             } catch (IOException e) {
-                e.printStackTrace();
+                LOGGER.info("Error caused by ModpackLoaderFabric: " + e);
             }
 
             ConfigBuilder builder = ConfigBuilder.create().setParentScreen(parent).setTitle(Text.of("ModpackLoader Config"));
@@ -97,7 +100,7 @@ public class ModMenuIntegration implements ModMenuApi {
                             description = modPack.get("description").getAsString();
                         }
                     } catch (IOException e) {
-                        e.printStackTrace();
+                        LOGGER.info("Error caused by ModpackLoaderFabric: " + e);
                     }
                     JsonPrimitive elem = new JsonPrimitive(packName);
                     boolean state = json.get("local").getAsJsonArray().contains(elem);
@@ -121,19 +124,19 @@ public class ModMenuIntegration implements ModMenuApi {
                 URL hostURL = new URL("https://modpack.wolfii.me/availableModpacks.php");
                 hostPacks = gson.fromJson(URLReader(hostURL), JsonArray.class);
             } catch (IOException e) {
-                e.printStackTrace();
+                LOGGER.info("Error caused by ModpackLoaderFabric: " + e);
             }
             assert hostPacks != null;
             for (JsonElement hostModpack : hostPacks) {
                 String packName = FilenameUtils.removeExtension(hostModpack.getAsString());
                 String description = null;
                 try {
-                    JsonObject modPack = gson.fromJson(URLReader(new URL("https://modpack.wolfii.me/packs/" + packName + ".json")), JsonObject.class);
+                    JsonObject modPack = gson.fromJson(URLReader(new URL("https://modpack.wolfii.me/packs/" + packName.replace(" ", "%20") + ".json")), JsonObject.class);
                     if (modPack.has("description")) {
                         description = modPack.get("description").getAsString();
                     }
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    LOGGER.info("Error caused by ModpackLoaderFabric: " + e);
                 }
                 JsonPrimitive elem = new JsonPrimitive(packName);
                 boolean state = json.get("host").getAsJsonArray().contains(elem);
@@ -162,7 +165,7 @@ public class ModMenuIntegration implements ModMenuApi {
                         description = modPack.get("description").getAsString();
                     }
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    LOGGER.info("Error caused by ModpackLoaderFabric: " + e);
                 }
                 JsonPrimitive elem = new JsonPrimitive(packName);
                 boolean state = json.get("url").getAsJsonArray().contains(elem);
@@ -228,7 +231,7 @@ public class ModMenuIntegration implements ModMenuApi {
                                 }
                             }
                         } catch (IOException e) {
-                            e.printStackTrace();
+                            LOGGER.info("Error caused by ModpackLoaderFabric: " + e);
                         }
                     } else if (!entry.getValue() && finalJson.get("url").getAsJsonArray().contains(elem)) {
                         finalJson.get("url").getAsJsonArray().remove(elem);
@@ -240,14 +243,14 @@ public class ModMenuIntegration implements ModMenuApi {
                     fileW.write(finalJson.toString());
                     fileW.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    LOGGER.info("Error caused by ModpackLoaderFabric: " + e);
                 }
 
                 if(updateOnStart[2]) {
                     try {
                         updateMods(true);
                     } catch (IOException e) {
-                        e.printStackTrace();
+                        LOGGER.info("Error caused by ModpackLoaderFabric: " + e);
                     }
                 }
             });
