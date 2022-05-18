@@ -1,5 +1,7 @@
 <img src="src/main/resources/assets/modpackloaderfabric/icon.png" width="128">
 
+⚠Development of this mod is no longer active and using it might crash the game⚠
+
 # ModpackLoaderFabric
 Using this mod makes it very easy to download a ton of mods from a list of modpacks and keep them up to date.
 
