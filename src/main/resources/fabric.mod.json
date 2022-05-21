@@ -24,9 +24,6 @@
       "net.justalittlewolf.modpackloaderfabric.ModMenuIntegration"
     ]
   },
-  "mixins": [
-
-  ],
   "depends": {
     "fabricloader": ">=0.13.0",
     "java": ">=17"

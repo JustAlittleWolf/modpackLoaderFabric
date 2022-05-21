@@ -24,10 +24,11 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.stream.Collectors;
 
-public class ModpackLoaderFabric implements ModInitializer  {
+public class ModpackLoaderFabric implements ModInitializer {
 
     public static final Logger LOGGER = LoggerFactory.getLogger("modpackloaderfabric");
     public static final String modSuffix = "_MPLF";
@@ -89,12 +90,25 @@ public class ModpackLoaderFabric implements ModInitializer  {
             for (final File fileEntry : Objects.requireNonNull(modFolder.listFiles())) {
                 if (fileEntry.isFile() && fileEntry.getName().endsWith(".jar")) {
                     JarFile local = new JarFile(fileEntry.getAbsoluteFile());
-                    InputStream localJsonInputStream = local.getInputStream(local.getJarEntry("fabric.mod.json"));
-                    JsonObject fabricModJsonLocal = gson.fromJson(new BufferedReader(new InputStreamReader(localJsonInputStream, StandardCharsets.UTF_8)).lines().collect(Collectors.joining("\n")), JsonObject.class);
-                    String modIdlocal = fabricModJsonLocal.get("id").getAsString();
-                    localJsonInputStream.close();
-                    local.close();
-                    modIdCache.put(modIdlocal, fileEntry.getName());
+                    JarEntry modIdFile = local.getJarEntry("fabric.mod.json");
+                    if (modIdFile != null) {
+                        InputStream localJsonInputStream = local.getInputStream(local.getJarEntry("fabric.mod.json"));
+                        JsonObject fabricModJsonLocal = gson.fromJson(new BufferedReader(new InputStreamReader(localJsonInputStream, StandardCharsets.UTF_8)).lines().collect(Collectors.joining("\n")), JsonObject.class);
+                        String modIdlocal = fabricModJsonLocal.get("id").getAsString();
+                        localJsonInputStream.close();
+                        local.close();
+                        modIdCache.put(modIdlocal, fileEntry.getName());
+                    } else {
+                        modIdFile = local.getJarEntry("quilt.mod.json");
+                        if (modIdFile != null) {
+                            InputStream localJsonInputStream = local.getInputStream(local.getJarEntry("quilt.mod.json"));
+                            JsonObject fabricModJsonLocal = gson.fromJson(new BufferedReader(new InputStreamReader(localJsonInputStream, StandardCharsets.UTF_8)).lines().collect(Collectors.joining("\n")), JsonObject.class);
+                            String modIdlocal = fabricModJsonLocal.get("quilt_loader").getAsJsonObject().get("id").getAsString();
+                            localJsonInputStream.close();
+                            local.close();
+                            modIdCache.put(modIdlocal, fileEntry.getName());
+                        }
+                    }
                 }
             }
         } catch (IOException e) {
@@ -177,12 +191,14 @@ public class ModpackLoaderFabric implements ModInitializer  {
                     }
                 }
             }
-        } catch (IOException e) {
+        } catch (
+                IOException e) {
             LOGGER.info("Error caused by ModpackLoaderFabric: " + e);
         }
         if (modPacksLoaded) {
             LOGGER.info("[ModpackLoaderFabric] All mods up to date");
         }
+
     }
 
 
