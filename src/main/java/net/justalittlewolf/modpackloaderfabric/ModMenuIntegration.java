@@ -22,15 +22,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import static net.justalittlewolf.modpackloaderfabric.ModpackLoaderFabric.URLReader;
-import static net.justalittlewolf.modpackloaderfabric.ModpackLoaderFabric.updateMods;
+import static net.justalittlewolf.modpackloaderfabric.ModpackLoaderFabric.*;
 
 public class ModMenuIntegration implements ModMenuApi {
     public static final Logger LOGGER = LoggerFactory.getLogger("modpackloaderfabric");
+
     @Override
     public ConfigScreenFactory<?> getModConfigScreenFactory() {
         return parent -> {
-
             Gson gson = new Gson();
             String configPath = FabricLoader.getInstance().getConfigDir().toString() + "/ModpackLoaderConfig.json";
             File file = new File(configPath);
@@ -119,27 +118,12 @@ public class ModMenuIntegration implements ModMenuApi {
             local.addEntry(entryBuilder.startTextDescription(Text.of("Add your own by creating a file in " + localModPackFolder)).build());
 
             ConfigCategory host = builder.getOrCreateCategory(Text.of("Hosted Modpacks"));
-            JsonArray hostPacks = null;
-            try {
-                URL hostURL = new URL("https://modpack.wolfii.me/availableModpacks.php");
-                hostPacks = gson.fromJson(URLReader(hostURL), JsonArray.class);
-            } catch (IOException e) {
-                LOGGER.info("Error caused by ModpackLoaderFabric: " + e);
-            }
-            assert hostPacks != null;
-            for (JsonElement hostModpack : hostPacks) {
-                String packName = FilenameUtils.removeExtension(hostModpack.getAsString());
-                String description = null;
-                try {
-                    JsonObject modPack = gson.fromJson(URLReader(new URL("https://modpack.wolfii.me/packs/" + packName.replace(" ", "%20") + ".json")), JsonObject.class);
-                    if (modPack.has("description")) {
-                        description = modPack.get("description").getAsString();
-                    }
-                } catch (IOException e) {
-                    LOGGER.info("Error caused by ModpackLoaderFabric: " + e);
-                }
-                JsonPrimitive elem = new JsonPrimitive(packName);
-                boolean state = json.get("host").getAsJsonArray().contains(elem);
+
+            HashMap<String, String> hostedPacks = ModpackLoaderFabric.hostedPacks;
+            for(Map.Entry<String, String> entry : hostedPacks.entrySet()) {
+                String packName = entry.getKey();
+                String description = entry.getValue();
+                boolean state = json.get("host").getAsJsonArray().contains(new JsonPrimitive(packName));
                 if (description != null) {
                     host.addEntry(entryBuilder.startBooleanToggle(Text.of(packName), state)
                             .setTooltip(Text.of(description))
@@ -246,13 +230,14 @@ public class ModMenuIntegration implements ModMenuApi {
                     LOGGER.info("Error caused by ModpackLoaderFabric: " + e);
                 }
 
-                if(updateOnStart[2]) {
+                if (updateOnStart[2]) {
                     try {
                         updateMods(true);
                     } catch (IOException e) {
                         LOGGER.info("Error caused by ModpackLoaderFabric: " + e);
                     }
                 }
+                ModpackLoaderFabric.loadHostModpacks();
             });
 
             return builder.build();
